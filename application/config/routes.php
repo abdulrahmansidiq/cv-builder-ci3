@@ -68,6 +68,7 @@ $route['login'] = 'auth/login';
 $route['register'] = 'auth/register';
 $route['logout'] = 'auth/logout';
 $route['dashboard'] = 'cv/dashboard';
+$route['cv/edit/(:num)'] = 'cv/edit/$1';
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

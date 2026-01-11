@@ -28,6 +28,7 @@
 
             <td><?= ucfirst($c->template) ?></td>
             <td>
+                <a href="<?= base_url('cv/edit/' . $c->id) ?>" class="btn btn-warning btn-sm">Edit</a>
                 <a href="<?= base_url('preview?id=' . $c->id) ?>" class="btn btn-info btn-sm">Preview</a>
                 <a href="<?= base_url('pdf?id=' . $c->id) ?>" class="btn btn-danger btn-sm">PDF</a>
             </td>

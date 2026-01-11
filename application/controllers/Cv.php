@@ -26,6 +26,49 @@ class Cv extends CI_Controller
         $this->load->view('dashboard', $data);
     }
 
+    public function edit($id)
+    {
+        $this->auth_check();
+
+        $data['profile'] = $this->db->get_where('profile', [
+            'id' => $id,
+            'user_id' => $this->session->userdata('user_id')
+        ])->row();
+
+        $data['edu'] = $this->Cv_model->get_education($id);
+        $data['exp'] = $this->Cv_model->get_experience($id);
+        $data['skills'] = $this->Cv_model->get_skills($id);
+
+        $this->load->view('cv_edit', $data);
+    }
+
+    public function add_education()
+    {
+        $cv = $this->input->get('cv');
+
+        if ($_POST) {
+            $data = [
+                'profile_id' => $cv,
+                'school' => $this->input->post('school'),
+                'major' => $this->input->post('major'),
+                'year' => $this->input->post('year')
+            ];
+            $this->Cv_model->insert_education($data);
+            redirect('cv/edit/' . $cv);
+        }
+
+        $data['cv'] = $cv;
+        $this->load->view('education_form', $data);
+    }
+
+    public function delete_education($id)
+    {
+        $cv = $this->input->get('cv');
+        $this->db->delete('education', ['id' => $id]);
+        redirect('cv/edit/' . $cv);
+    }
+
+
     private function auth_check()
     {
         if (!$this->session->userdata('user_id')) {
