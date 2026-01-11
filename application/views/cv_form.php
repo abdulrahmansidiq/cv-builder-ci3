@@ -3,11 +3,12 @@
 <div class="container mt-5">
     <h3>Buat CV</h3>
 
-    <form method="post" action="<?= base_url('cv/save_profile') ?>">
+    <form method="post" action="<?= base_url('cv/save_profile') ?>" enctype="multipart/form-data">
+        <input type="file" name="photo" class="form-control mb-2">
         <input class="form-control mb-2" name="full_name" placeholder="Nama Lengkap">
         <input class="form-control mb-2" name="job_title" placeholder="Job Title">
-        <input class="form-control mb-2" name="email">
-        <input class="form-control mb-2" name="phone">
+        <input class="form-control mb-2" name="email" placeholder="email">
+        <input class="form-control mb-2" name="phone" placeholder="phone">
         <textarea class="form-control mb-2" name="address"></textarea>
         <textarea class="form-control mb-2" name="about"></textarea>
         <button class="btn btn-primary">Simpan</button>

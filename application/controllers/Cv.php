@@ -14,11 +14,57 @@ class Cv extends CI_Controller
         $this->load->view('cv_form');
     }
 
+    public function dashboard()
+    {
+        $this->auth_check();
+        $uid = $this->session->userdata('user_id');
+
+        $data['cv'] = $this->db
+            ->where('user_id', $uid)
+            ->get('profile')->result();
+
+        $this->load->view('dashboard', $data);
+    }
+
+    private function auth_check()
+    {
+        if (!$this->session->userdata('user_id')) {
+            redirect('login');
+        }
+    }
+
     public function save_profile()
     {
-        $this->Cv_model->save_profile();
-        redirect('/');
+
+        $photo = '';
+
+        if (!empty($_FILES['photo']['name'])) {
+            $config['upload_path'] = './uploads/';
+            $config['allowed_types'] = 'jpg|jpeg|png';
+            $config['max_size'] = 2048;
+
+            $this->load->library('upload', $config);
+
+            if ($this->upload->do_upload('photo')) {
+                $photo = $this->upload->data('file_name');
+            }
+        }
+
+        $data = [
+            'user_id' => $this->session->userdata('user_id'),
+            'full_name' => $this->input->post('full_name'),
+            'job_title' => $this->input->post('job_title'),
+            'email' => $this->input->post('email'),
+            'phone' => $this->input->post('phone'),
+            'address' => $this->input->post('address'),
+            'about' => $this->input->post('about'),
+            'photo' => $photo
+        ];
+
+        $this->db->insert('profile', $data);
+        redirect('template');
     }
+
 
     public function preview()
     {
@@ -88,13 +134,27 @@ class Cv extends CI_Controller
         $this->load->view('template_select');
     }
 
-    public function preview($template = 'simple')
-    {
-        $data['profile'] = $this->Cv_model->get_profile();
-        $data['edu'] = $this->Cv_model->get_education();
-        $data['exp'] = $this->Cv_model->get_experience();
-        $data['skills'] = $this->Cv_model->get_skills();
+    // public function preview($template = 'simple')
+    // {
+    //     $data['profile'] = $this->Cv_model->get_profile();
+    //     $data['edu'] = $this->Cv_model->get_education();
+    //     $data['exp'] = $this->Cv_model->get_experience();
+    //     $data['skills'] = $this->Cv_model->get_skills();
 
-        $this->load->view('templates/' . $template, $data);
+    //     $this->load->view('templates/' . $template, $data);
+    // }
+
+    public function preview($template='simple'){
+        $id = $this->input->get('id');
+
+        $data['profile'] = $this->db->get_where('profile',[
+            'id'=>$id,
+            'user_id'=>$this->session->userdata('user_id')
+        ])->row();
+
+        $data['edu'] = $this->Cv_model->get_education();
+        ...
+        $this->load->view('templates/'.$template,$data);
     }
+
 }

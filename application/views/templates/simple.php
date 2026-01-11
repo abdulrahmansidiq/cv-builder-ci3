@@ -1,27 +1,34 @@
-<div style="max-width:800px;margin:auto;font-family:Arial">
+<link rel="stylesheet" href="<?= base_url('assets/css/cv.css') ?>">
+<div class="cv-box">
+    <?php if ($profile->photo): ?>
+        <img src="<?= base_url('uploads/' . $profile->photo) ?>" width="120" style="border-radius:50%">
+    <?php endif ?>
 
-    <h2><?= $profile->full_name ?></h2>
-    <p><?= $profile->job_title ?></p>
-    <hr>
+    <div style="max-width:800px;margin:auto;font-family:Arial">
 
-    <h4>About</h4>
-    <p><?= $profile->about ?></p>
+        <h2><?= $profile->full_name ?></h2>
+        <p><?= $profile->job_title ?></p>
+        <hr>
 
-    <h4>Pendidikan</h4>
-    <?php foreach ($edu as $e): ?>
-        <p><?= $e->school ?> (<?= $e->year ?>)</p>
-    <?php endforeach ?>
+        <h4>About</h4>
+        <p><?= $profile->about ?></p>
 
-    <h4>Pengalaman</h4>
-    <?php foreach ($exp as $x): ?>
-        <p><?= $x->company ?> - <?= $x->position ?></p>
-    <?php endforeach ?>
-
-    <h4>Skill</h4>
-    <ul>
-        <?php foreach ($skills as $s): ?>
-            <li><?= $s->skill_name ?></li>
+        <h4>Pendidikan</h4>
+        <?php foreach ($edu as $e): ?>
+            <p><?= $e->school ?> (<?= $e->year ?>)</p>
         <?php endforeach ?>
-    </ul>
 
+        <h4>Pengalaman</h4>
+        <?php foreach ($exp as $x): ?>
+            <p><?= $x->company ?> - <?= $x->position ?></p>
+        <?php endforeach ?>
+
+        <h4>Skill</h4>
+        <ul>
+            <?php foreach ($skills as $s): ?>
+                <li><?= $s->skill_name ?></li>
+            <?php endforeach ?>
+        </ul>
+
+    </div>
 </div>

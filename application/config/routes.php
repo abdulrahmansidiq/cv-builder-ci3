@@ -64,6 +64,10 @@ $route['skills'] = 'cv/skills';
 $route['template'] = 'cv/templates';
 $route['preview/(:any)'] = 'cv/preview/$1';
 
+$route['login'] = 'auth/login';
+$route['register'] = 'auth/register';
+$route['logout'] = 'auth/logout';
+$route['dashboard'] = 'cv/dashboard';
 
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

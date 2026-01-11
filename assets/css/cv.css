@@ -1,0 +1,12 @@
+.cv-box{
+    max-width:900px;
+    margin:auto;
+    background:white;
+    padding:30px;
+    box-shadow:0 0 20px rgba(0,0,0,.1);
+}
+.section-title{
+    font-weight:bold;
+    border-bottom:2px solid #0d6efd;
+    margin-top:20px;
+}
