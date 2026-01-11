@@ -38,5 +38,7 @@
             <?php endforeach ?>
 
         </div>
+        <a href="<?= base_url('pdf/modern?id=' . $profile->id) ?>">Download PDF</a>
+
     </div>
 </div>

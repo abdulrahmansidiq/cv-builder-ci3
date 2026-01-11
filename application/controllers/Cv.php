@@ -66,28 +66,6 @@ class Cv extends CI_Controller
     }
 
 
-    public function preview()
-    {
-        $data['profile'] = $this->Cv_model->get_profile();
-        $data['edu'] = $this->Cv_model->get_education();
-        $data['exp'] = $this->Cv_model->get_experience();
-        $data['skills'] = $this->Cv_model->get_skills();
-        $this->load->view('cv_preview', $data);
-    }
-
-    public function pdf()
-    {
-        $this->load->library('dompdf_gen');
-
-        $data['profile'] = $this->Cv_model->get_profile();
-        $this->load->view('cv_preview', $data);
-
-        $html = $this->output->get_output();
-        $this->dompdf->load_html($html);
-        $this->dompdf->render();
-        $this->dompdf->stream("cv.pdf");
-    }
-
     public function education()
     {
         $data['edu'] = $this->Cv_model->get_education();
@@ -134,27 +112,38 @@ class Cv extends CI_Controller
         $this->load->view('template_select');
     }
 
-    // public function preview($template = 'simple')
-    // {
-    //     $data['profile'] = $this->Cv_model->get_profile();
-    //     $data['edu'] = $this->Cv_model->get_education();
-    //     $data['exp'] = $this->Cv_model->get_experience();
-    //     $data['skills'] = $this->Cv_model->get_skills();
+    public function preview()
+    {
+        $data['profile'] = $this->Cv_model->get_profile();
+        $data['edu'] = $this->Cv_model->get_education();
+        $data['exp'] = $this->Cv_model->get_experience();
+        $data['skills'] = $this->Cv_model->get_skills();
+        $this->load->view('cv_preview', $data);
+    }
 
-    //     $this->load->view('templates/' . $template, $data);
-    // }
+    public function pdf($template = 'simple')
+    {
+        $this->auth_check();
 
-    public function preview($template='simple'){
         $id = $this->input->get('id');
 
-        $data['profile'] = $this->db->get_where('profile',[
-            'id'=>$id,
-            'user_id'=>$this->session->userdata('user_id')
+        $data['profile'] = $this->db->get_where('profile', [
+            'id' => $id,
+            'user_id' => $this->session->userdata('user_id')
         ])->row();
 
         $data['edu'] = $this->Cv_model->get_education();
-        ...
-        $this->load->view('templates/'.$template,$data);
-    }
+        $data['exp'] = $this->Cv_model->get_experience();
+        $data['skills'] = $this->Cv_model->get_skills();
 
+        $html = $this->load->view('templates/' . $template, $data, true);
+
+        $this->load->library('pdf');
+        $this->pdf->setPaper('A4', 'portrait');
+        $this->pdf->loadHtml($html);
+        $this->pdf->render();
+
+        $filename = 'CV-' . $data['profile']->full_name . '.pdf';
+        $this->pdf->stream($filename, ['Attachment' => 1]);
+    }
 }
