@@ -58,7 +58,9 @@ class Cv extends CI_Controller
             'phone' => $this->input->post('phone'),
             'address' => $this->input->post('address'),
             'about' => $this->input->post('about'),
+            'template' => $this->input->post('template'),
             'photo' => $photo
+
         ];
 
         $this->db->insert('profile', $data);
@@ -112,14 +114,34 @@ class Cv extends CI_Controller
         $this->load->view('template_select');
     }
 
+    // public function preview()
+    // {
+    //     $data['profile'] = $this->Cv_model->get_profile();
+    //     $data['edu'] = $this->Cv_model->get_education();
+    //     $data['exp'] = $this->Cv_model->get_experience();
+    //     $data['skills'] = $this->Cv_model->get_skills();
+    //     $this->load->view('cv_preview', $data);
+    // }
+
     public function preview()
     {
-        $data['profile'] = $this->Cv_model->get_profile();
-        $data['edu'] = $this->Cv_model->get_education();
-        $data['exp'] = $this->Cv_model->get_experience();
-        $data['skills'] = $this->Cv_model->get_skills();
-        $this->load->view('cv_preview', $data);
+        $this->auth_check();
+        $id = $this->input->get('id');
+
+        $profile = $this->db->get_where('profile', [
+            'id' => $id,
+            'user_id' => $this->session->userdata('user_id')
+        ])->row();
+        // $data['profile'] = $profile;
+        $data['edu'] = $this->Cv_model->get_education($id);
+        $data['exp'] = $this->Cv_model->get_experience($id);
+        $data['skills'] = $this->Cv_model->get_skills($id);
+
+
+        $template = $profile->template ?? 'simple';
+        $this->load->view('templates/' . $template, $data);
     }
+
 
     public function pdf($template = 'simple')
     {
@@ -135,6 +157,8 @@ class Cv extends CI_Controller
         $data['edu'] = $this->Cv_model->get_education();
         $data['exp'] = $this->Cv_model->get_experience();
         $data['skills'] = $this->Cv_model->get_skills();
+
+        $template = $data['profile']->template ?? 'simple';
 
         $html = $this->load->view('templates/' . $template, $data, true);
 

@@ -11,6 +11,12 @@
         <input class="form-control mb-2" name="phone" placeholder="phone">
         <textarea class="form-control mb-2" name="address"></textarea>
         <textarea class="form-control mb-2" name="about"></textarea>
+        <select name="template" class="form-control mb-2">
+            <option value="simple">Simple</option>
+            <option value="modern">Modern</option>
+            <option value="creative">Creative</option>
+        </select>
+
         <button class="btn btn-primary">Simpan</button>
         <a href="<?= base_url('preview') ?>" class="btn btn-success">Preview CV</a>
     </form>
