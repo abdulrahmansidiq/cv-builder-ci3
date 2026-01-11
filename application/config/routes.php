@@ -52,5 +52,18 @@ defined('BASEPATH') or exit('No direct script access allowed');
 $route['default_controller'] = 'cv';
 $route['preview'] = 'cv/preview';
 $route['pdf'] = 'cv/pdf';
+
+$route['education'] = 'cv/education';
+$route['education/add'] = 'cv/add_education';
+$route['education/edit/(:num)'] = 'cv/edit_education/$1';
+$route['education/delete/(:num)'] = 'cv/delete_education/$1';
+
+$route['experience'] = 'cv/experience';
+$route['skills'] = 'cv/skills';
+
+$route['template'] = 'cv/templates';
+$route['preview/(:any)'] = 'cv/preview/$1';
+
+
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;

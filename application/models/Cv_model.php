@@ -21,11 +21,6 @@ class Cv_model extends CI_Model
         return $this->db->get('profile')->row();
     }
 
-    public function get_education()
-    {
-        return $this->db->get('education')->result();
-    }
-
     public function get_experience()
     {
         return $this->db->get('experience')->result();
@@ -34,5 +29,30 @@ class Cv_model extends CI_Model
     public function get_skills()
     {
         return $this->db->get('skills')->result();
+    }
+
+    public function get_education()
+    {
+        return $this->db->get('education')->result();
+    }
+
+    public function insert_education($data)
+    {
+        $this->db->insert('education', $data);
+    }
+
+    public function get_education_by_id($id)
+    {
+        return $this->db->get_where('education', ['id' => $id])->row();
+    }
+
+    public function update_education($id, $data)
+    {
+        $this->db->where('id', $id)->update('education', $data);
+    }
+
+    public function delete_education($id)
+    {
+        $this->db->where('id', $id)->delete('education');
     }
 }
