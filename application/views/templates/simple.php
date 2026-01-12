@@ -12,9 +12,10 @@
 <body>
 
     <div class="cv-box">
-        <?php if ($profile->photo): ?>
-            <img src="<?= FCPATH . 'uploads/' . $profile->photo ?>" width="120">
-        <?php endif ?>
+        <?php if (!empty($profile->photo)): ?>
+            <img src="<?= base_url('uploads/' . $profile->photo) ?>" width="120">
+        <?php endif; ?>
+
 
         <div class="page-break" style="max-width:800px;margin:auto;font-family:Arial">
 

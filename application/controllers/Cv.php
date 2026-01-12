@@ -138,24 +138,22 @@ class Cv extends CI_Controller
         $this->load->view('template_select');
     }
 
-    public function preview()
+    public function preview($id)
     {
-        $this->auth_check();
-        $id = $this->input->get('id');
 
-        $profile = $this->db->get_where('profile', [
-            'id' => $id,
-            'user_id' => $this->session->userdata('user_id')
-        ])->row();
-        // $data['profile'] = $profile;
+        $profile = $this->Cv_model->get_profile($id);
+        if (!$profile) show_404();
+
+        $data['profile'] = $profile;
         $data['edu'] = $this->Cv_model->get_education($id);
         $data['exp'] = $this->Cv_model->get_experience($id);
         $data['skills'] = $this->Cv_model->get_skills($id);
 
-
         $template = $profile->template ?? 'simple';
+
         $this->load->view('templates/' . $template, $data);
     }
+
 
 
     public function pdf($template = 'simple')
@@ -169,9 +167,12 @@ class Cv extends CI_Controller
             'user_id' => $this->session->userdata('user_id')
         ])->row();
 
-        $data['edu'] = $this->Cv_model->get_education();
-        $data['exp'] = $this->Cv_model->get_experience();
-        $data['skills'] = $this->Cv_model->get_skills();
+        $profile = $this->Cv_model->get_profile($id);
+
+        $data['profile'] = $profile;
+        $data['edu'] = $this->Cv_model->get_education($profile->id);
+        $data['exp'] = $this->Cv_model->get_experience($profile->id);
+        $data['skills'] = $this->Cv_model->get_skills($profile->id);
 
         $template = $data['profile']->template ?? 'simple';
 
