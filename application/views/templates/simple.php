@@ -44,8 +44,11 @@
 
         </div>
 
-        <a href="<?= base_url('pdf/simple?id=' . $profile->id) ?>"
-            class="btn btn-danger mb-3">Download PDF</a>
+        <a href="<?= base_url('pdf/simple?id=' . $profile->id) ?>" class="btn btn-danger mb-3">Download PDF</a>
+        <?php if ($this->session->userdata('user_id')): ?>
+            <a href="<?= base_url('pdf?id=' . $profile->id) ?>">Download PDF</a>
+        <?php endif ?>
+
 
     </div>
 

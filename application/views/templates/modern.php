@@ -39,6 +39,10 @@
 
         </div>
         <a href="<?= base_url('pdf/modern?id=' . $profile->id) ?>">Download PDF</a>
+        <?php if ($this->session->userdata('user_id')): ?>
+            <a href="<?= base_url('pdf?id=' . $profile->id) ?>">Download PDF</a>
+        <?php endif ?>
+
 
     </div>
 </div>

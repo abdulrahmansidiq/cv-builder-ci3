@@ -42,32 +42,6 @@ class Cv extends CI_Controller
         $this->load->view('cv_edit', $data);
     }
 
-    public function add_education()
-    {
-        $cv = $this->input->get('cv');
-
-        if ($_POST) {
-            $data = [
-                'profile_id' => $cv,
-                'school' => $this->input->post('school'),
-                'major' => $this->input->post('major'),
-                'year' => $this->input->post('year')
-            ];
-            $this->Cv_model->insert_education($data);
-            redirect('cv/edit/' . $cv);
-        }
-
-        $data['cv'] = $cv;
-        $this->load->view('education_form', $data);
-    }
-
-    public function delete_education($id)
-    {
-        $cv = $this->input->get('cv');
-        $this->db->delete('education', ['id' => $id]);
-        redirect('cv/edit/' . $cv);
-    }
-
 
     private function auth_check()
     {
@@ -102,6 +76,7 @@ class Cv extends CI_Controller
             'address' => $this->input->post('address'),
             'about' => $this->input->post('about'),
             'template' => $this->input->post('template'),
+            'share_token' => bin2hex(random_bytes(16)),
             'photo' => $photo
 
         ];
@@ -119,16 +94,28 @@ class Cv extends CI_Controller
 
     public function add_education()
     {
+        $cv = $this->input->get('cv');
+
         if ($_POST) {
             $data = [
+                'profile_id' => $cv,
                 'school' => $this->input->post('school'),
                 'major' => $this->input->post('major'),
-                'year' => $this->input->post('year'),
+                'year' => $this->input->post('year')
             ];
             $this->Cv_model->insert_education($data);
-            redirect('education');
+            redirect('cv/edit/' . $cv);
         }
-        $this->load->view('education_form');
+
+        $data['cv'] = $cv;
+        $this->load->view('education_form', $data);
+    }
+
+    public function delete_education($id)
+    {
+        $cv = $this->input->get('cv');
+        $this->db->delete('education', ['id' => $id]);
+        redirect('cv/edit/' . $cv);
     }
 
     public function edit_education($id)
@@ -146,25 +133,10 @@ class Cv extends CI_Controller
         $this->load->view('education_form', $data);
     }
 
-    public function delete_education($id)
-    {
-        $this->Cv_model->delete_education($id);
-        redirect('education');
-    }
-
     public function templates()
     {
         $this->load->view('template_select');
     }
-
-    // public function preview()
-    // {
-    //     $data['profile'] = $this->Cv_model->get_profile();
-    //     $data['edu'] = $this->Cv_model->get_education();
-    //     $data['exp'] = $this->Cv_model->get_experience();
-    //     $data['skills'] = $this->Cv_model->get_skills();
-    //     $this->load->view('cv_preview', $data);
-    // }
 
     public function preview()
     {
@@ -212,5 +184,95 @@ class Cv extends CI_Controller
 
         $filename = 'CV-' . $data['profile']->full_name . '.pdf';
         $this->pdf->stream($filename, ['Attachment' => 1]);
+    }
+
+    public function duplicate($id)
+    {
+        $this->auth_check();
+
+        // Ambil CV lama
+        $old = $this->db->get_where('profile', [
+            'id' => $id,
+            'user_id' => $this->session->userdata('user_id')
+        ])->row();
+
+        if (!$old) show_404();
+
+        // Copy profile (tanpa id)
+        $newProfile = [
+            'user_id'   => $old->user_id,
+            'full_name' => $old->full_name . ' (Copy)',
+            'job_title' => $old->job_title,
+            'email'     => $old->email,
+            'phone'     => $old->phone,
+            'address'   => $old->address,
+            'about'     => $old->about,
+            'photo'     => $old->photo,
+            'template'  => $old->template
+        ];
+
+        $this->db->insert('profile', $newProfile);
+        $new_id = $this->db->insert_id();
+
+        // Copy education
+        $edu = $this->db->get_where('education', ['profile_id' => $id])->result();
+        foreach ($edu as $e) {
+            $this->db->insert('education', [
+                'profile_id' => $new_id,
+                'school' => $e->school,
+                'major' => $e->major,
+                'year' => $e->year
+            ]);
+        }
+
+        // Copy experience
+        $exp = $this->db->get_where('experience', ['profile_id' => $id])->result();
+        foreach ($exp as $x) {
+            $this->db->insert('experience', [
+                'profile_id' => $new_id,
+                'company' => $x->company,
+                'position' => $x->position,
+                'year' => $x->year,
+                'description' => $x->description
+            ]);
+        }
+
+        // Copy skills
+        $skills = $this->db->get_where('skills', ['profile_id' => $id])->result();
+        foreach ($skills as $s) {
+            $this->db->insert('skills', [
+                'profile_id' => $new_id,
+                'skill_name' => $s->skill_name,
+                'level' => $s->level
+            ]);
+        }
+
+        redirect('cv/edit/' . $new_id);
+    }
+
+    public function public_view($token)
+    {
+
+        $profile = $this->db->get_where('profile', [
+            'share_token' => $token
+        ])->row();
+
+        if (!$profile) show_404();
+
+        $data['profile'] = $profile;
+        $data['edu'] = $this->Cv_model->get_education($profile->id);
+        $data['exp'] = $this->Cv_model->get_experience($profile->id);
+        $data['skills'] = $this->Cv_model->get_skills($profile->id);
+
+        $template = $profile->template ?? 'simple';
+
+        $this->load->view('templates/' . $template, $data);
+    }
+
+    public function regenerate_link($id)
+    {
+        $token = bin2hex(random_bytes(16));
+        $this->db->update('profile', ['share_token' => $token], ['id' => $id]);
+        redirect('dashboard');
     }
 }

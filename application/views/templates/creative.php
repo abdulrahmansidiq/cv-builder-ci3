@@ -30,5 +30,10 @@
             <?php endforeach ?>
 
         </div>
+
+        <?php if ($this->session->userdata('user_id')): ?>
+            <a href="<?= base_url('pdf?id=' . $profile->id) ?>">Download PDF</a>
+        <?php endif ?>
+
     </div>
 </div>
